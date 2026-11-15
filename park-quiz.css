@@ -1,0 +1,14 @@
+/* Give the Park & Nature fourth activity its own green identity while keeping
+   the same accessible, high-readability card styling. */
+#homeScreen .illustration-park {
+  background: linear-gradient(135deg, #e8efe7, #d6e3d4);
+}
+
+#homeScreen .illustration-park span {
+  border-color: #7d9877;
+  color: #355d3c;
+}
+
+body.high-contrast #homeScreen .illustration-park {
+  background: #171717;
+}
