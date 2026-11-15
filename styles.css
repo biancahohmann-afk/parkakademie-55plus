@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ParkAkademie 55plus – Gedächtnis & Rätsel</title>
+    <meta
+      name="description"
+      content="Gedächtnistraining und Rätsel für Teilnehmende der ParkAkademie 55plus."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">ParkAkademie 55plus</p>
+          <h1>Gedächtnis & Rätsel</h1>
+        </div>
+        <button id="settingsToggle" class="secondary-btn" type="button" aria-expanded="false">
+          Einstellungen
+        </button>
+      </header>
+
+      <section id="settingsPanel" class="settings-panel hidden" aria-label="Einstellungen">
+        <label for="fontScale">Schriftgröße</label>
+        <input id="fontScale" type="range" min="100" max="140" step="5" value="100" />
+        <div class="settings-actions">
+          <button id="contrastToggle" class="secondary-btn" type="button">Hoher Kontrast: Aus</button>
+        </div>
+      </section>
+
+      <main>
+        <section id="homeScreen" class="panel active">
+          <h2>Willkommen</h2>
+          <p>
+            Trainiere dein Gedächtnis und löse kleine Rätsel – einfach, klar und gut lesbar.
+          </p>
+          <div class="quick-stats">
+            <div>
+              <span>Richtige Antworten</span>
+              <strong id="totalCorrect">0</strong>
+            </div>
+            <div>
+              <span>Spiele</span>
+              <strong id="gamesPlayed">0</strong>
+            </div>
+          </div>
+          <div class="button-row">
+            <button id="startMemoryBtn" class="primary-btn" type="button">Gedächtnis starten</button>
+            <button id="startPuzzleBtn" class="primary-btn" type="button">Rätsel starten</button>
+          </div>
+        </section>
+
+        <section id="memoryScreen" class="panel">
+          <div class="panel-header">
+            <h2>Gedächtnis</h2>
+            <button class="secondary-btn" type="button" data-nav="home">Zurück</button>
+          </div>
+          <p id="memoryInstruction" class="instruction">Merke dir die Reihenfolge.</p>
+          <div id="memorySequence" class="memory-sequence"></div>
+          <div id="memoryBoard" class="card-grid" aria-live="polite"></div>
+          <div class="status-box">
+            <p id="memoryStatus">Bereit?</p>
+          </div>
+        </section>
+
+        <section id="puzzleScreen" class="panel">
+          <div class="panel-header">
+            <h2>Rätsel</h2>
+            <button class="secondary-btn" type="button" data-nav="home">Zurück</button>
+          </div>
+          <div class="puzzle-card">
+            <p id="puzzleQuestion" class="question"></p>
+            <div id="puzzleOptions" class="option-list"></div>
+            <p id="puzzleFeedback" class="feedback" aria-live="polite"></p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
