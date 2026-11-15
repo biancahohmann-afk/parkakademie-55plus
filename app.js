@@ -8,7 +8,9 @@ const state = {
   memoryLocked: true,
   memoryRoundNumber: 0,
   memoryTimer: null,
-  puzzleIndex: 0,
+  puzzleLevelIndex: 0,
+  puzzleQuestionIndex: 0,
+  levelCorrect: 0,
   puzzleAnswered: false,
   highContrast: false,
   fontScale: 100,
@@ -25,95 +27,330 @@ const shapes = [
   "Bogen",
 ];
 
-const puzzles = [
+const levels = [
   {
-    question: "Ein Vortrag beginnt um 14:30 Uhr und dauert 75 Minuten. Wann endet er?",
-    options: ["15:15 Uhr", "15:30 Uhr", "15:45 Uhr", "16:00 Uhr"],
-    answer: "15:45 Uhr",
-    explanation: "Nach 60 Minuten ist es 15:30 Uhr. Weitere 15 Minuten ergeben 15:45 Uhr.",
-  },
-  {
-    question: "Welches Wort bedeutet ungefähr dasselbe wie „besonnen“?",
-    options: ["überlegt", "eilig", "laut", "unsicher"],
-    answer: "überlegt",
-    explanation: "Wer besonnen handelt, handelt ruhig und überlegt.",
-  },
-  {
-    question: "Das Sprichwort lautet: „Viele Köche verderben …“",
-    options: ["den Abend", "den Brei", "die Suppe nicht", "das Rezeptbuch"],
-    answer: "den Brei",
-    explanation: "Das bekannte Sprichwort lautet: „Viele Köche verderben den Brei.“",
-  },
-  {
-    question: "Welche Stadt liegt am Rhein?",
-    options: ["Dresden", "Köln", "Leipzig", "Rostock"],
-    answer: "Köln",
-    explanation: "Der Rhein fließt unter anderem durch Köln.",
-  },
-  {
-    question: "Ein Zug fährt um 10:48 Uhr ab. Die Fahrt dauert 1 Stunde und 27 Minuten. Wann kommt er an?",
-    options: ["12:05 Uhr", "12:15 Uhr", "12:25 Uhr", "12:35 Uhr"],
-    answer: "12:15 Uhr",
-    explanation: "Eine Stunde nach 10:48 Uhr ist es 11:48 Uhr. Weitere 27 Minuten ergeben 12:15 Uhr.",
-  },
-  {
-    question: "Alle Lesungen sind Veranstaltungen. Einige Veranstaltungen finden am Abend statt. Was lässt sich daraus sicher schließen?",
-    options: [
-      "Alle Lesungen finden am Abend statt.",
-      "Keine Lesung findet am Abend statt.",
-      "Es lässt sich nicht sicher sagen, ob Lesungen am Abend stattfinden.",
-      "Alle Abendveranstaltungen sind Lesungen.",
+    title: "Level 1 – Alltag & Logik",
+    questions: [
+      {
+        category: "Rechnen im Alltag",
+        question:
+          "Ein Kurs kostet 250 Euro. Für eine frühe Anmeldung gibt es 18 Prozent Ermäßigung. Wie viel kostet der Kurs danach?",
+        options: ["195 Euro", "205 Euro", "215 Euro", "225 Euro"],
+        answer: "205 Euro",
+        explanation:
+          "18 Prozent von 250 Euro sind 45 Euro. 250 minus 45 ergibt 205 Euro.",
+      },
+      {
+        category: "Zahlenfolge",
+        question: "Welche Zahl ergänzt die Reihe sinnvoll? 4, 9, 19, 39, …",
+        options: ["59", "69", "79", "89"],
+        answer: "79",
+        explanation:
+          "Die Folge entsteht durch Verdoppeln und Plus 1: 4×2+1=9, 9×2+1=19, 19×2+1=39, 39×2+1=79.",
+      },
+      {
+        category: "Zeitplanung",
+        question:
+          "Drei Vorträge dauern jeweils 20 Minuten. Zwischen dem zweiten und dritten Vortrag gibt es eine Pause von 10 Minuten. Wie lange dauert das Programm insgesamt?",
+        options: ["60 Minuten", "70 Minuten", "80 Minuten", "90 Minuten"],
+        answer: "70 Minuten",
+        explanation:
+          "3×20 = 60 Minuten. Hinzu kommt eine 10-Minuten-Pause. Insgesamt sind es 70 Minuten.",
+      },
+      {
+        category: "Wortschatz",
+        question: "Welches Wort trifft die Bedeutung von „präzise“ am besten?",
+        options: ["genau", "vorsichtig", "ausführlich", "ungewöhnlich"],
+        answer: "genau",
+        explanation:
+          "Präzise bedeutet genau, klar und sachlich bestimmt.",
+      },
+      {
+        category: "Bruchrechnung",
+        question:
+          "Für eine Veranstaltung stehen 90 Plätze zur Verfügung. Zwei Drittel sind bereits vergeben. Wie viele Plätze sind vergeben?",
+        options: ["30", "45", "60", "75"],
+        answer: "60",
+        explanation:
+          "Ein Drittel von 90 ist 30. Zwei Drittel sind 60.",
+      },
+      {
+        category: "Zeitrechnung",
+        question:
+          "Eine Besprechung beginnt um 9:15 Uhr und dauert 1 Stunde 40 Minuten. Wann endet sie?",
+        options: ["10:35 Uhr", "10:45 Uhr", "10:55 Uhr", "11:05 Uhr"],
+        answer: "10:55 Uhr",
+        explanation:
+          "Eine Stunde später ist 10:15 Uhr. Weitere 40 Minuten ergeben 10:55 Uhr.",
+      },
+      {
+        category: "Sprachverständnis",
+        question:
+          "Welches Wort ist das Gegenteil von „sicher“?",
+        options: ["unsicher", "klar", "stabil", "fest"],
+        answer: "unsicher",
+        explanation:
+          "Unsicher ist das Gegenteil von sicher. Es beschreibt Zweifel oder fehlende Gewissheit.",
+      },
+      {
+        category: "Mengenlehre",
+        question:
+          "Ein Raum hat 24 Plätze. Drei Viertel davon sind besetzt. Wie viele Plätze sind noch frei?",
+        options: ["4", "6", "8", "12"],
+        answer: "6",
+        explanation:
+          "Drei Viertel von 24 sind 18. Übrig bleiben 6 freie Plätze.",
+      },
+      {
+        category: "Alltagslogik",
+        question:
+          "Eine Fahrkarte kostet 18 Euro. Ein Rabatt von 10 Prozent wird gewährt. Wie viel kostet die Fahrkarte danach?",
+        options: ["15,80 Euro", "16,20 Euro", "16,80 Euro", "17,20 Euro"],
+        answer: "16,20 Euro",
+        explanation:
+          "10 Prozent von 18 Euro sind 1,80 Euro. 18 minus 1,80 ist 16,20 Euro.",
+      },
+      {
+        category: "Satzlogik",
+        question:
+          "Wenn alle Kunden eine Reservierung haben und einige Reservierungen online erfolgen, was gilt dann nicht zwingend?",
+        options: [
+          "Jede Reservierung ist online.",
+          "Einige Reservierungen sind online.",
+          "Nicht alle Reservierungen sind online.",
+          "Es gibt Reservierungen.",
+        ],
+        answer: "Jede Reservierung ist online.",
+        explanation:
+          "Aus der Aussage folgt nur, dass einige Reservierungen online sind. Nicht alle müssen online erfolgen.",
+      },
     ],
-    answer: "Es lässt sich nicht sicher sagen, ob Lesungen am Abend stattfinden.",
-    explanation: "Die Angaben sagen nicht, ob die Abendveranstaltungen auch Lesungen sind.",
   },
   {
-    question: "Welches Wort passt nicht in die Reihe?",
-    options: ["Roman", "Gedicht", "Biografie", "Notenständer"],
-    answer: "Notenständer",
-    explanation: "Roman, Gedicht und Biografie sind Literaturformen. Ein Notenständer ist ein Gegenstand.",
-  },
-  {
-    question: "Eine Flasche enthält 1,5 Liter Wasser. Drei Gläser mit je 0,25 Liter werden gefüllt. Wie viel Wasser bleibt übrig?",
-    options: ["0,5 Liter", "0,75 Liter", "1 Liter", "1,25 Liter"],
-    answer: "0,75 Liter",
-    explanation: "Drei Gläser enthalten zusammen 0,75 Liter. Von 1,5 Litern bleiben 0,75 Liter übrig.",
-  },
-  {
-    question: "Eine Besprechung dauert von 9:20 Uhr bis 10:05 Uhr. Wie lange dauert sie?",
-    options: ["35 Minuten", "40 Minuten", "45 Minuten", "50 Minuten"],
-    answer: "45 Minuten",
-    explanation: "Von 9:20 Uhr bis 10:00 Uhr sind es 40 Minuten, danach noch 5 Minuten.",
-  },
-  {
-    question: "Welches Wort ergänzt die Reihe sinnvoll? Januar, März, Mai, …",
-    options: ["Juni", "Juli", "August", "September"],
-    answer: "Juli",
-    explanation: "Die Reihe besteht aus jedem zweiten Monat: Januar, März, Mai, Juli.",
-  },
-  {
-    question: "In einer Ausstellung sind 24 Bilder zu sehen. Ein Viertel davon sind Landschaftsbilder. Wie viele Landschaftsbilder sind es?",
-    options: ["4", "6", "8", "12"],
-    answer: "6",
-    explanation: "Ein Viertel von 24 ist 24 geteilt durch 4, also 6.",
-  },
-  {
-    question: "Welche Redewendung bedeutet, eine Angelegenheit besonders sorgfältig zu prüfen?",
-    options: [
-      "Etwas unter die Lupe nehmen",
-      "Etwas auf die lange Bank schieben",
-      "Etwas aus dem Ärmel schütteln",
-      "Etwas an die große Glocke hängen",
+    title: "Level 2 – Muster & Analyse",
+    questions: [
+      {
+        category: "Prozentrechnung",
+        question:
+          "Ein Mantel kostet 240 Euro. Der Preis wird um 15 Prozent gesenkt. Wie hoch ist der neue Preis?",
+        options: ["196 Euro", "204 Euro", "210 Euro", "216 Euro"],
+        answer: "204 Euro",
+        explanation:
+          "15 Prozent von 240 Euro sind 36 Euro. 240 minus 36 = 204 Euro.",
+      },
+      {
+        category: "Zahlenfolge",
+        question: "Welche Zahl folgt? 2, 6, 12, 20, 30, …",
+        options: ["36", "40", "42", "44"],
+        answer: "42",
+        explanation:
+          "Die Abstände wachsen: +4, +6, +8, +10, +12. Deshalb folgt 30 + 12 = 42.",
+      },
+      {
+        category: "Logisches Denken",
+        question:
+          "Alle Teilnehmenden eines Chors können Noten lesen. Einige Personen, die Noten lesen können, spielen außerdem ein Instrument. Was lässt sich sicher sagen?",
+        options: [
+          "Alle Chormitglieder spielen ein Instrument.",
+          "Einige Chormitglieder spielen ein Instrument.",
+          "Kein Chormitglied spielt ein Instrument.",
+          "Es lässt sich nicht sicher sagen, ob Chormitglieder ein Instrument spielen.",
+        ],
+        answer:
+          "Es lässt sich nicht sicher sagen, ob Chormitglieder ein Instrument spielen.",
+        explanation:
+          "Die Informationen betreffen die Fähigkeit, Noten zu lesen und das Instrumentenspiel, aber nicht zwingend die Chormitglieder.",
+      },
+      {
+        category: "Planung",
+        question:
+          "Ein Buch hat 480 Seiten. Eine Person liest an jedem Tag 30 Seiten. Wie viele Lesetage braucht sie für das gesamte Buch?",
+        options: ["14", "15", "16", "18"],
+        answer: "16",
+        explanation:
+          "480 ÷ 30 = 16. Sie braucht also 16 Tage.",
+      },
+      {
+        category: "Zeitgefühl",
+        question:
+          "Eine Führung beginnt um 8:35 Uhr und endet um 11:10 Uhr. Wie lange dauert sie?",
+        options: [
+          "2 Stunden 25 Minuten",
+          "2 Stunden 35 Minuten",
+          "2 Stunden 45 Minuten",
+          "3 Stunden 5 Minuten",
+        ],
+        answer: "2 Stunden 35 Minuten",
+        explanation:
+          "Von 8:35 bis 10:35 sind 2 Stunden. Bis 11:10 sind es weitere 35 Minuten. Insgesamt 2 Stunden 35 Minuten.",
+      },
+      {
+        category: "Wortstamm",
+        question: "Welches Wort passt am besten zu „verifizieren“?",
+        options: ["prüfen", "lösen", "verschieben", "ausgeben"],
+        answer: "prüfen",
+        explanation:
+          "Verifizieren bedeutet etwas prüfen und bestätigen.",
+      },
+      {
+        category: "Mengen und Verhältnisse",
+        question:
+          "Ein Betrieb hat 120 Mitarbeiterinnen und Mitarbeiter. 25 Prozent sind im Vertrieb tätig. Wie viele sind das?",
+        options: ["20", "25", "30", "35"],
+        answer: "30",
+        explanation:
+          "25 Prozent von 120 ist ein Viertel, also 30.",
+      },
+      {
+        category: "Logik",
+        question:
+          "Wenn alle Kunden die Teilnahmebedingungen akzeptieren und einige Vertreter zugleich Kunden sind, was gilt dann nicht zwangsläufig?",
+        options: [
+          "Alle Kunden akzeptieren die Teilnahmebedingungen.",
+          "Einige Vertreter akzeptieren die Teilnahmebedingungen.",
+          "Es gibt Vertreter, die zugleich Kunden sind.",
+          "Einige Kunden sind Vertreter.",
+        ],
+        answer: "Alle Kunden akzeptieren die Teilnahmebedingungen.",
+        explanation:
+          "Aus der Aussage folgt nur, dass alle Kunden die Bedingungen akzeptieren; das sagt nichts darüber, was Vertreter tun.",
+      },
+      {
+        category: "Zahlensystem",
+        question:
+          "Eine Bestellung kostet 84 Euro. Zwei Personen teilen die Kosten gleichmäßig. Wie viel zahlt jede Person?",
+        options: ["40 Euro", "42 Euro", "44 Euro", "46 Euro"],
+        answer: "42 Euro",
+        explanation:
+          "84 ÷ 2 = 42, also zahlt jede Person 42 Euro.",
+      },
+      {
+        category: "Textverständnis",
+        question:
+          "Welches Wort ist am besten synonym zu „vorausschauend“?",
+        options: ["vorsorglich", "schnell", "laut", "unklar"],
+        answer: "vorsorglich",
+        explanation:
+          "Vorausschauend bedeutet mit Blick auf die Zukunft entsprechend vorsorglich handeln.",
+      },
     ],
-    answer: "Etwas unter die Lupe nehmen",
-    explanation: "Wer etwas unter die Lupe nimmt, betrachtet und prüft es sehr genau.",
+  },
+  {
+    title: "Level 3 – Anspruchsvoll & strategisch",
+    questions: [
+      {
+        category: "Mehrstufiges Rechnen",
+        question:
+          "Ein Gerät kostet 250 Euro. Zuerst wird der Preis um 20 Prozent reduziert. Auf den reduzierten Preis fallen anschließend 10 Prozent Versandkosten an. Wie hoch ist der Gesamtpreis?",
+        options: ["200 Euro", "215 Euro", "220 Euro", "225 Euro"],
+        answer: "220 Euro",
+        explanation:
+          "20 Prozent Rabatt von 250 Euro sind 50 Euro. Der Preis sinkt auf 200 Euro. 10 Prozent davon sind 20 Euro; zusammen sind es 220 Euro.",
+      },
+      {
+        category: "Zahlenfolge",
+        question: "Welche Zahl folgt? 3, 8, 18, 38, 78, …",
+        options: ["118", "148", "156", "158"],
+        answer: "158",
+        explanation:
+          "Jede Zahl wird verdoppelt und um 2 erhöht: 3×2+2=8, 8×2+2=18, 18×2+2=38, 78×2+2=158.",
+      },
+      {
+        category: "Logik und Mengen",
+        question:
+          "In einem Lesekreis lesen alle Mitglieder Romane. Einige Menschen, die Romane lesen, schreiben selbst. Was folgt daraus zwingend?",
+        options: [
+          "Alle Mitglieder des Lesekreises schreiben selbst.",
+          "Einige Mitglieder des Lesekreises schreiben selbst.",
+          "Kein Mitglied des Lesekreises schreibt selbst.",
+          "Es lässt sich nicht feststellen, ob Mitglieder des Lesekreises selbst schreiben.",
+        ],
+        answer:
+          "Es lässt sich nicht feststellen, ob Mitglieder des Lesekreises selbst schreiben.",
+        explanation:
+          "Es gibt eine Überlappung zwischen Lesekreis und Schreibenden, aber sie ist nicht zwingend. Deshalb ist keine sichere Aussage möglich.",
+      },
+      {
+        category: "Budgetplanung",
+        question:
+          "Für eine Veranstaltung stehen 900 Euro zur Verfügung. Ein Drittel wird für den Raum ausgegeben. Von dem verbleibenden Betrag werden 20 Prozent für Material verwendet. Wie viel Geld bleibt anschließend übrig?",
+        options: ["420 Euro", "450 Euro", "480 Euro", "540 Euro"],
+        answer: "480 Euro",
+        explanation:
+          "Ein Drittel von 900 Euro ist 300 Euro. Es bleiben 600 Euro. 20 Prozent davon sind 120 Euro. 600-120=480 Euro.",
+      },
+      {
+        category: "Schlussfolgerungen",
+        question:
+          "Alle Mitglieder des Vorstands wurden eingeladen. Frau Berger wurde eingeladen. Welche Folgerung ist logisch sicher?",
+        options: [
+          "Frau Berger ist Vorstandsmitglied.",
+          "Frau Berger ist kein Vorstandsmitglied.",
+          "Frau Berger könnte Vorstandsmitglied sein, muss es aber nicht.",
+          "Nur Vorstandsmitglieder wurden eingeladen.",
+        ],
+        answer:
+          "Frau Berger könnte Vorstandsmitglied sein, muss es aber nicht.",
+        explanation:
+          "Die Aussage sagt nur, dass alle Vorstandsmitglieder eingeladen wurden. Sie sagt nichts darüber, dass nur Vorstandsmitglieder eingeladen wurden.",
+      },
+      {
+        category: "Verhältnisse",
+        question:
+          "Eine Fläche wird in 3 gleich große Felder geteilt. Zwei Felder sind davon mit 60 Prozent ihrer Fläche bepflanzt. Wie viel Prozent der Gesamtfläche sind bepflanzt?",
+        options: ["20 Prozent", "40 Prozent", "60 Prozent", "80 Prozent"],
+        answer: "40 Prozent",
+        explanation:
+          "Zwei von drei Feldern sind zu 60 Prozent bepflanzt. Das entspricht 2/3 × 60 % = 40 % der Gesamtfläche.",
+      },
+      {
+        category: "Zeit und Pausen",
+        question:
+          "Ein Seminar dauert 2 Stunden 15 Minuten. Es gibt zwei Pausen zu je 10 Minuten. Wie lange dauert das Seminar ohne die Pausen?",
+        options: [
+          "1 Stunde 45 Minuten",
+          "1 Stunde 55 Minuten",
+          "2 Stunden 5 Minuten",
+          "2 Stunden 15 Minuten",
+        ],
+        answer: "1 Stunde 55 Minuten",
+        explanation:
+          "2 Stunden 15 Minuten = 135 Minuten. Zwei Pausen von je 10 Minuten = 20 Minuten. 135 − 20 = 115 Minuten = 1 Stunde 55 Minuten.",
+      },
+      {
+        category: "Wortbedeutung",
+        question: "Welches Wort ist die beste Synonym-Bedeutung zu „konsequent“?",
+        options: ["beharrlich", "zwanghaft", "wenig klar", "zufällig"],
+        answer: "beharrlich",
+        explanation:
+          "Konsequent bedeutet fest und zielstrebig auf einem Weg bleibend. Beharrlich passt am besten.",
+      },
+      {
+        category: "Verteilungslogik",
+        question:
+          "Ein Verein hat 160 Mitglieder. 35 Prozent davon sind aktiv in einer Arbeitsgruppe. Wie viele Mitglieder sind aktiv?",
+        options: ["46", "50", "56", "60"],
+        answer: "56",
+        explanation:
+          "35 Prozent von 160 = 0,35 × 160 = 56.",
+      },
+      {
+        category: "Textanalyse",
+        question:
+          "Welches Wort ist am passendsten als Gegenstück zu „reserviert“?",
+        options: ["offen", "ruhig", "schweigsam", "vorsichtig"],
+        answer: "offen",
+        explanation:
+          "Reserviert bedeutet zurückhaltend und eher distanziert. Offen steht dem gegenüber.",
+      },
+    ],
   },
 ];
 
-const el = {
-  home: document.getElementById("homeScreen"),
-  memory: document.getElementById("memoryScreen"),
-  puzzle: document.getElementById("puzzleScreen"),
+const elements = {
+  homeScreen: document.getElementById("homeScreen"),
+  memoryScreen: document.getElementById("memoryScreen"),
+  puzzleScreen: document.getElementById("puzzleScreen"),
 
   totalCorrect: document.getElementById("totalCorrect"),
   gamesPlayed: document.getElementById("gamesPlayed"),
@@ -124,67 +361,91 @@ const el = {
   fontScale: document.getElementById("fontScale"),
   fontScaleValue: document.getElementById("fontScaleValue"),
 
-  startMemory: document.getElementById("startMemoryBtn"),
-  startPuzzle: document.getElementById("startPuzzleBtn"),
+  startMemoryBtn: document.getElementById("startMemoryBtn"),
+  startPuzzleBtn: document.getElementById("startPuzzleBtn"),
 
   memoryInstruction: document.getElementById("memoryInstruction"),
   memorySequence: document.getElementById("memorySequence"),
   memoryBoard: document.getElementById("memoryBoard"),
   memoryStatus: document.getElementById("memoryStatus"),
-  memoryStart: document.getElementById("memoryStartBtn"),
-  memoryNext: document.getElementById("memoryNextBtn"),
+  memoryStartBtn: document.getElementById("memoryStartBtn"),
+  memoryNextBtn: document.getElementById("memoryNextBtn"),
 
+  quizGame: document.getElementById("quizGame"),
+  levelLabel: document.getElementById("levelLabel"),
+  questionProgress: document.getElementById("questionProgress"),
+  progressBar: document.getElementById("progressBar"),
+  puzzleCategory: document.getElementById("puzzleCategory"),
   puzzleQuestion: document.getElementById("puzzleQuestion"),
   puzzleOptions: document.getElementById("puzzleOptions"),
   puzzleFeedback: document.getElementById("puzzleFeedback"),
-  nextPuzzle: document.getElementById("nextPuzzleBtn"),
+  nextPuzzleBtn: document.getElementById("nextPuzzleBtn"),
+
+  levelResult: document.getElementById("levelResult"),
+  levelResultTitle: document.getElementById("levelResultTitle"),
+  levelScore: document.getElementById("levelScore"),
+  levelPercentage: document.getElementById("levelPercentage"),
+  levelResultMessage: document.getElementById("levelResultMessage"),
+  levelCorrectCount: document.getElementById("levelCorrectCount"),
+  levelQuestionCount: document.getElementById("levelQuestionCount"),
+  nextLevelBtn: document.getElementById("nextLevelBtn"),
+  replayLevelBtn: document.getElementById("replayLevelBtn"),
+  resultHomeBtn: document.getElementById("resultHomeBtn"),
 };
 
-function showScreen(name) {
+function showScreen(screenName) {
   const screens = {
-    home: el.home,
-    memory: el.memory,
-    puzzle: el.puzzle,
+    home: elements.homeScreen,
+    memory: elements.memoryScreen,
+    puzzle: elements.puzzleScreen,
   };
 
-  Object.entries(screens).forEach(([screenName, screen]) => {
-    screen.hidden = screenName !== name;
+  Object.entries(screens).forEach(([name, screen]) => {
+    const isActive = name === screenName;
+    screen.hidden = !isActive;
   });
 
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function updateScore() {
-  el.totalCorrect.textContent = String(state.totalCorrect);
-  el.gamesPlayed.textContent = String(state.gamesPlayed);
+function updateScoreboard() {
+  elements.totalCorrect.textContent = String(state.totalCorrect);
+  elements.gamesPlayed.textContent = String(state.gamesPlayed);
 }
 
 function updateSettings() {
   document.body.classList.toggle("high-contrast", state.highContrast);
   document.body.style.fontSize = `${state.fontScale}%`;
-  el.fontScaleValue.textContent = `${state.fontScale} %`;
+  elements.fontScaleValue.textContent = `${state.fontScale} %`;
 
-  el.contrastToggle.textContent = state.highContrast
+  elements.contrastToggle.textContent = state.highContrast
     ? "Hoher Kontrast: An"
     : "Hoher Kontrast: Aus";
 
-  el.contrastToggle.setAttribute("aria-pressed", String(state.highContrast));
+  elements.contrastToggle.setAttribute(
+    "aria-pressed",
+    String(state.highContrast),
+  );
 }
 
 function resetMemoryScreen() {
   window.clearTimeout(state.memoryTimer);
-  state.memoryLocked = true;
+
   state.memoryRoundNumber = 0;
-  el.memorySequence.replaceChildren();
-  el.memoryBoard.replaceChildren();
-  el.memoryInstruction.textContent = "Starte eine Runde und merke dir die Formen.";
-  el.memoryStatus.textContent = "Bereit? Nimm dir Zeit.";
-  el.memoryStart.hidden = false;
-  el.memoryNext.hidden = true;
+  state.memoryUserInput = [];
+  state.memoryLocked = true;
+
+  elements.memorySequence.replaceChildren();
+  elements.memoryBoard.replaceChildren();
+  elements.memoryInstruction.textContent =
+    "Merke dir die Formen in der richtigen Reihenfolge.";
+  elements.memoryStatus.textContent = "Bereit? Nimm dir Zeit.";
+  elements.memoryStartBtn.hidden = false;
+  elements.memoryNextBtn.hidden = true;
 }
 
 function buildMemoryBoard() {
-  el.memoryBoard.replaceChildren();
+  elements.memoryBoard.replaceChildren();
 
   shapes.forEach((shape) => {
     const button = document.createElement("button");
@@ -193,13 +454,16 @@ function buildMemoryBoard() {
     button.textContent = shape;
     button.dataset.shape = shape;
     button.disabled = true;
-    button.addEventListener("click", () => selectShape(shape, button));
-    el.memoryBoard.appendChild(button);
+    button.setAttribute("aria-label", shape);
+
+    button.addEventListener("click", () => handleMemoryChoice(shape, button));
+    elements.memoryBoard.appendChild(button);
   });
 }
 
 function startMemoryRound() {
   window.clearTimeout(state.memoryTimer);
+
   state.memoryRoundNumber += 1;
   state.memoryUserInput = [];
   state.memoryLocked = true;
@@ -209,67 +473,80 @@ function startMemoryRound() {
     return shapes[Math.floor(Math.random() * shapes.length)];
   });
 
-  el.memoryInstruction.textContent = `Merke dir die ${length} Formen in dieser Reihenfolge.`;
-  el.memoryStatus.textContent = "Schau dir die Reihenfolge in Ruhe an.";
-  el.memoryStart.hidden = true;
-  el.memoryNext.hidden = true;
+  elements.memoryInstruction.textContent =
+    `Merke dir die ${length} Formen in der angezeigten Reihenfolge.`;
+  elements.memoryStatus.textContent = "Schau dir die Reihenfolge in Ruhe an.";
+  elements.memoryStartBtn.hidden = true;
+  elements.memoryNextBtn.hidden = true;
 
-  el.memorySequence.replaceChildren();
+  elements.memorySequence.replaceChildren();
+
   state.memorySequence.forEach((shape, index) => {
     const chip = document.createElement("span");
     chip.className = "memory-chip";
     chip.textContent = shape;
     chip.setAttribute("aria-label", `Form ${index + 1}: ${shape}`);
-    el.memorySequence.appendChild(chip);
+    elements.memorySequence.appendChild(chip);
   });
 
   buildMemoryBoard();
 
   const activeRound = state.memoryRoundNumber;
+
   state.memoryTimer = window.setTimeout(() => {
     if (activeRound !== state.memoryRoundNumber) return;
 
-    el.memorySequence.replaceChildren();
-    el.memoryInstruction.textContent = "Wähle nun die Formen in derselben Reihenfolge aus.";
-    el.memoryStatus.textContent = "Du bist dran.";
+    elements.memorySequence.replaceChildren();
+    elements.memoryInstruction.textContent =
+      "Wähle nun die Formen in derselben Reihenfolge aus.";
+    elements.memoryStatus.textContent = "Du bist dran.";
     state.memoryLocked = false;
 
-    el.memoryBoard.querySelectorAll(".memory-choice").forEach((button) => {
-      button.disabled = false;
-    });
-  }, 2500);
+    elements.memoryBoard
+      .querySelectorAll(".memory-choice")
+      .forEach((button) => {
+        button.disabled = false;
+      });
+  }, 3000);
 }
 
-function finishMemoryRound(correct) {
+function finishMemoryRound(isCorrect) {
   state.memoryLocked = true;
   state.gamesPlayed += 1;
 
-  if (correct) {
+  if (isCorrect) {
     state.totalCorrect += 1;
-    el.memoryStatus.textContent = "Richtig! Du hast die Reihenfolge wiedergegeben.";
-    el.memoryInstruction.textContent = "Gut gemacht. Du kannst eine neue Runde spielen.";
+    elements.memoryStatus.textContent =
+      "Richtig! Du hast die Reihenfolge vollständig wiedergegeben.";
+    elements.memoryInstruction.textContent =
+      "Gut gemacht. Wenn du möchtest, kannst du eine neue Runde spielen.";
   } else {
-    el.memoryStatus.textContent = "Das war nicht ganz richtig. Eine neue Runde wartet auf dich.";
-    el.memoryInstruction.textContent =
+    elements.memoryStatus.textContent =
+      "Das war nicht ganz die richtige Reihenfolge. Eine neue Runde wartet auf dich.";
+    elements.memoryInstruction.textContent =
       `Die richtige Reihenfolge war: ${state.memorySequence.join(", ")}.`;
   }
 
-  el.memoryBoard.querySelectorAll(".memory-choice").forEach((button) => {
-    button.disabled = true;
-  });
+  elements.memoryBoard
+    .querySelectorAll(".memory-choice")
+    .forEach((button) => {
+      button.disabled = true;
+    });
 
-  el.memoryNext.hidden = false;
-  updateScore();
+  elements.memoryNextBtn.hidden = false;
+  updateScoreboard();
 }
 
-function selectShape(shape, button) {
+function handleMemoryChoice(shape, button) {
   if (state.memoryLocked || button.disabled) return;
 
   button.classList.add("selected");
   state.memoryUserInput.push(shape);
 
   const index = state.memoryUserInput.length - 1;
-  if (shape !== state.memorySequence[index]) {
+  const expected = state.memorySequence[index];
+
+  if (shape !== expected) {
     button.classList.add("wrong");
     finishMemoryRound(false);
     return;
@@ -280,96 +557,229 @@ function selectShape(shape, button) {
   }
 }
 
-function showPuzzle() {
-  const puzzle = puzzles[state.puzzleIndex % puzzles.length];
+function startQuiz() {
+  state.puzzleLevelIndex = 0;
+  state.puzzleQuestionIndex = 0;
+  state.levelCorrect = 0;
+
+  elements.quizGame.hidden = false;
+  elements.levelResult.hidden = true;
+
+  showScreen("puzzle");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const level = levels[state.puzzleLevelIndex];
+  const question = level.questions[state.puzzleQuestionIndex];
+  const totalQuestions = level.questions.length;
+  const currentQuestionNumber = state.puzzleQuestionIndex + 1;
 
   state.puzzleAnswered = false;
-  el.puzzleQuestion.textContent = puzzle.question;
-  el.puzzleOptions.replaceChildren();
-  el.puzzleFeedback.textContent = "";
-  el.puzzleFeedback.className = "feedback";
-  el.nextPuzzle.hidden = true;
 
-  puzzle.options.forEach((option) => {
+  elements.levelLabel.textContent = `${level.title}`;
+  elements.questionProgress.textContent =
+    `Frage ${currentQuestionNumber} von ${totalQuestions}`;
+  elements.progressBar.style.width =
+    `${((currentQuestionNumber - 1) / totalQuestions) * 100}%`;
+
+  elements.puzzleCategory.textContent = question.category;
+  elements.puzzleQuestion.textContent = question.question;
+  elements.puzzleOptions.replaceChildren();
+  elements.puzzleFeedback.textContent = "";
+  elements.puzzleFeedback.className = "feedback";
+  elements.nextPuzzleBtn.hidden = true;
+  elements.nextPuzzleBtn.textContent =
+    currentQuestionNumber === totalQuestions ? "Ergebnis anzeigen" : "Weiter";
+
+  question.options.forEach((option) => {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "option-btn";
     button.textContent = option;
-    button.addEventListener("click", () => answerPuzzle(option, button, puzzle));
-    el.puzzleOptions.appendChild(button);
+
+    button.addEventListener("click", () => {
+      answerQuestion(option, button, question);
+    });
+
+    elements.puzzleOptions.appendChild(button);
   });
 }
 
-function answerPuzzle(selected, selectedButton, puzzle) {
+function answerQuestion(selectedOption, selectedButton, question) {
   if (state.puzzleAnswered) return;
 
   state.puzzleAnswered = true;
   state.gamesPlayed += 1;
 
-  el.puzzleOptions.querySelectorAll(".option-btn").forEach((button) => {
+  elements.puzzleOptions.querySelectorAll(".option-btn").forEach((button) => {
     button.disabled = true;
-    if (button.textContent === puzzle.answer) {
+
+    if (button.textContent === question.answer) {
       button.classList.add("correct");
     }
   });
 
-  if (selected === puzzle.answer) {
+  if (selectedOption === question.answer) {
+    state.levelCorrect += 1;
     state.totalCorrect += 1;
-    el.puzzleFeedback.textContent = `Richtig. ${puzzle.explanation}`;
-    el.puzzleFeedback.classList.add("success");
+
+    elements.puzzleFeedback.textContent = `Richtig. ${question.explanation}`;
+    elements.puzzleFeedback.classList.add("success");
   } else {
     selectedButton.classList.add("wrong");
-    el.puzzleFeedback.textContent = `Das ist leider nicht richtig. ${puzzle.explanation}`;
-    el.puzzleFeedback.classList.add("error");
+
+    elements.puzzleFeedback.textContent =
+      `Die richtige Antwort ist „${question.answer}“. ${question.explanation}`;
+    elements.puzzleFeedback.classList.add("error");
   }
 
-  el.nextPuzzle.hidden = false;
-  updateScore();
+  elements.nextPuzzleBtn.hidden = false;
+  updateScoreboard();
 }
 
-el.settingsToggle.addEventListener("click", () => {
-  const opening = el.settingsPanel.hidden;
-  el.settingsPanel.hidden = !opening;
-  el.settingsToggle.setAttribute("aria-expanded", String(opening));
-});
+function showLevelResult() {
+  const level = levels[state.puzzleLevelIndex];
+  const total = level.questions.length;
+  const percentage = Math.round((state.levelCorrect / total) * 100);
 
-el.contrastToggle.addEventListener("click", () => {
-  state.highContrast = !state.highContrast;
-  updateSettings();
-});
+  elements.quizGame.hidden = true;
+  elements.levelResult.hidden = false;
 
-el.fontScale.addEventListener("input", (event) => {
-  state.fontScale = Number(event.target.value);
-  updateSettings();
-});
+  elements.levelResultTitle.textContent = level.title;
+  elements.levelScore.textContent = `${state.levelCorrect} von ${total}`;
+  elements.levelPercentage.textContent = `${percentage} % richtig`;
+  elements.levelCorrectCount.textContent = String(state.levelCorrect);
+  elements.levelQuestionCount.textContent = String(total);
 
-el.startMemory.addEventListener("click", () => {
-  resetMemoryScreen();
-  showScreen("memory");
-});
+  if (percentage === 100) {
+    elements.levelResultMessage.textContent =
+      "Ausgezeichnet! Du hast dieses Level komplett fehlerfrei gelöst.";
+  } else if (percentage >= 80) {
+    elements.levelResultMessage.textContent =
+      "Sehr gut! Du hast die meisten Aufgaben sicher gemeistert.";
+  } else if (percentage >= 60) {
+    elements.levelResultMessage.textContent =
+      "Gut gemacht. Die Erklärungen helfen dir dabei, die Zusammenhänge noch klarer zu erkennen.";
+  } else {
+    elements.levelResultMessage.textContent =
+      "Das ist ein guter Start. Nimm dir die Erklärungen in Ruhe vor und versuche es in der nächsten Runde erneut.";
+  }
 
-el.memoryStart.addEventListener("click", startMemoryRound);
-el.memoryNext.addEventListener("click", startMemoryRound);
+  const isLastLevel = state.puzzleLevelIndex === levels.length - 1;
+  elements.nextLevelBtn.hidden = isLastLevel;
+  elements.nextLevelBtn.disabled = isLastLevel;
+  elements.nextLevelBtn.textContent = isLastLevel
+    ? "Letztes Level erreicht"
+    : "Nächstes Level";
+}
 
-el.startPuzzle.addEventListener("click", () => {
-  showScreen("puzzle");
-  showPuzzle();
-});
+function continueQuiz() {
+  const currentLevel = levels[state.puzzleLevelIndex];
+  const isLastQuestion =
+    state.puzzleQuestionIndex === currentLevel.questions.length - 1;
 
-el.nextPuzzle.addEventListener("click", () => {
-  state.puzzleIndex += 1;
-  showPuzzle();
-});
+  if (isLastQuestion) {
+    showLevelResult();
+    return;
+  }
 
-document.querySelectorAll('[data-nav="home"]').forEach((button) => {
-  button.addEventListener("click", (event) => {
-    event.preventDefault();
-    window.clearTimeout(state.memoryTimer);
-    state.memoryLocked = true;
+  state.puzzleQuestionIndex += 1;
+  renderQuestion();
+}
+
+function replayCurrentLevel() {
+  state.puzzleQuestionIndex = 0;
+  state.levelCorrect = 0;
+  elements.levelResult.hidden = true;
+  elements.quizGame.hidden = false;
+  renderQuestion();
+}
+
+function startNextLevel() {
+  if (state.puzzleLevelIndex >= levels.length - 1) {
+    return;
+  }
+
+  state.puzzleLevelIndex += 1;
+  state.puzzleQuestionIndex = 0;
+  state.levelCorrect = 0;
+
+  elements.levelResult.hidden = true;
+  elements.quizGame.hidden = false;
+  renderQuestion();
+}
+
+function bindEvents() {
+  elements.settingsToggle.addEventListener("click", () => {
+    const opening = elements.settingsPanel.hidden;
+    elements.settingsPanel.hidden = !opening;
+    elements.settingsToggle.setAttribute("aria-expanded", String(opening));
+  });
+
+  elements.contrastToggle.addEventListener("click", () => {
+    state.highContrast = !state.highContrast;
+    updateSettings();
+  });
+
+  elements.fontScale.addEventListener("input", (event) => {
+    state.fontScale = Number(event.target.value);
+    updateSettings();
+  });
+
+  elements.startMemoryBtn.addEventListener("click", () => {
+    resetMemoryScreen();
+    showScreen("memory");
+  });
+
+  elements.memoryStartBtn.addEventListener("click", startMemoryRound);
+  elements.memoryNextBtn.addEventListener("click", startMemoryRound);
+
+  elements.startPuzzleBtn.addEventListener("click", startQuiz);
+
+  elements.nextPuzzleBtn.addEventListener("click", () => {
+    if (state.puzzleQuestionIndex === levels[state.puzzleLevelIndex].questions.length - 1) {
+      showLevelResult();
+    } else {
+      state.puzzleQuestionIndex += 1;
+      renderQuestion();
+    }
+  });
+
+  elements.nextLevelBtn.addEventListener("click", () => {
+    if (state.puzzleLevelIndex < levels.length - 1) {
+      state.puzzleLevelIndex += 1;
+      state.puzzleQuestionIndex = 0;
+      state.levelCorrect = 0;
+      elements.levelResult.hidden = true;
+      elements.quizGame.hidden = false;
+      renderQuestion();
+    }
+  });
+
+  elements.replayLevelBtn.addEventListener("click", () => {
+    state.puzzleQuestionIndex = 0;
+    state.levelCorrect = 0;
+    elements.levelResult.hidden = true;
+    elements.quizGame.hidden = false;
+    renderQuestion();
+  });
+
+  elements.resultHomeBtn.addEventListener("click", () => {
     showScreen("home");
   });
-});
 
-updateScore();
+  document.querySelectorAll('[data-nav="home"]').forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.clearTimeout(state.memoryTimer);
+      state.memoryLocked = true;
+      showScreen("home");
+    });
+  });
+}
+
+bindEvents();
 updateSettings();
+updateScoreboard();
 showScreen("home");

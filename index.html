@@ -5,20 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Gedächtnistraining und Rätsel für Teilnehmende der ParkAkademie 55plus."
+      content="Gedächtnistraining und Quiz für Teilnehmende der ParkAkademie 55plus."
     />
     <title>ParkAkademie 55plus – Gedächtnis &amp; Rätsel</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="app.js" defer></script>
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./app.js" defer></script>
   </head>
-
   <body>
     <div class="page-shell">
       <header class="topbar">
-        <a class="brand" href="#" data-nav="home" aria-label="Zur Startseite">
+        <a class="brand" href="#" aria-label="Zur Startseite" data-nav="home">
           <img
             class="brand-logo"
-            src="parkakademie-logo.png"
+            src="./parkakademie-logo.png"
             alt="ParkAkademie – Forum für Bildung und Begegnung"
             onerror="this.hidden = true; document.getElementById('logoFallback').hidden = false;"
           />
@@ -33,18 +32,25 @@
           <h1>Gedächtnis &amp; Rätsel</h1>
         </div>
 
-        <button
-          id="settingsToggle"
-          class="button button-outline"
-          type="button"
-          aria-expanded="false"
-          aria-controls="settingsPanel"
-        >
-          Einstellungen
-        </button>
+        <div class="header-actions">
+          <button
+            id="settingsToggle"
+            class="button button-outline"
+            type="button"
+            aria-expanded="false"
+            aria-controls="settingsPanel"
+          >
+            Einstellungen
+          </button>
+        </div>
       </header>
 
-      <section id="settingsPanel" class="settings-panel" hidden>
+      <aside
+        id="settingsPanel"
+        class="settings-panel"
+        aria-label="Anzeigeeinstellungen"
+        hidden
+      >
         <div class="setting">
           <label for="fontScale">Schriftgröße</label>
           <input
@@ -69,18 +75,18 @@
             Hoher Kontrast: Aus
           </button>
         </div>
-      </section>
+      </aside>
 
       <main>
         <section id="homeScreen" class="panel">
           <p class="section-kicker">Willkommen</p>
           <h2>Eine ruhige Denkpause für den Alltag</h2>
           <p class="intro">
-            Wähle eine Übung und nimm dir Zeit. Es geht nicht um Geschwindigkeit,
-            sondern um Freude am Denken.
+            Wähle eine Übung und nimm dir Zeit. Ziel ist nicht Geschwindigkeit,
+            sondern Konzentration, Klarheit und Genuss am Denken.
           </p>
 
-          <div class="stats" aria-label="Dein bisheriger Stand">
+          <div class="stats" aria-label="Bisheriger Fortschritt">
             <div class="stat-card">
               <span>Richtige Antworten</span>
               <strong id="totalCorrect">0</strong>
@@ -96,8 +102,8 @@
               <p class="activity-number">01</p>
               <h3>Merkfolge</h3>
               <p>
-                Präge dir eine Reihe aus Formen ein und gib sie anschließend in
-                derselben Reihenfolge wieder.
+                Beobachte eine Reihenfolge aus Formen und wiederhole sie
+                anschließend exakt in derselben Reihenfolge.
               </p>
               <button id="startMemoryBtn" class="button button-primary" type="button">
                 Merkübung starten
@@ -108,17 +114,17 @@
               <p class="activity-number">02</p>
               <h3>Wissen &amp; Knobeln</h3>
               <p>
-                Fragen zu Sprache, Alltag, Kultur und logischem Denken –
-                verständlich und für Erwachsene formuliert.
+                Drei anspruchsvolle Levels mit jeweils 10 klaren und
+                erwachsenengerechten Fragen.
               </p>
               <button id="startPuzzleBtn" class="button button-primary" type="button">
-                Rätsel starten
+                Quiz starten
               </button>
             </article>
           </div>
 
           <p class="privacy-note">
-            Deine Ergebnisse bleiben in dieser Sitzung. Es werden keine
+            Deine Ergebnisse bleiben nur in dieser Sitzung. Es werden keine
             persönlichen Daten gespeichert.
           </p>
         </section>
@@ -135,7 +141,7 @@
           </div>
 
           <p id="memoryInstruction" class="instruction">
-            Starte eine Runde und merke dir die Formen.
+            Merke dir die Formen in der richtigen Reihenfolge.
           </p>
 
           <div
@@ -151,7 +157,7 @@
           ></div>
 
           <div class="feedback-box" aria-live="polite">
-            <p id="memoryStatus">Bereit? Nimm dir Zeit.</p>
+            <p id="memoryStatus">Bereit für die erste Runde?</p>
           </div>
 
           <div class="action-row">
@@ -168,22 +174,76 @@
           <div class="panel-heading">
             <div>
               <p class="section-kicker">Wissen &amp; Knobeln</p>
-              <h2>Eine Frage für dich</h2>
+              <h2>Rätselrunde</h2>
             </div>
             <button class="button button-outline" type="button" data-nav="home">
               Zur Übersicht
             </button>
           </div>
 
-          <div class="puzzle-card">
-            <p id="puzzleQuestion" class="question"></p>
-            <div id="puzzleOptions" class="option-list"></div>
-            <p id="puzzleFeedback" class="feedback" aria-live="polite"></p>
+          <div id="quizGame">
+            <div class="quiz-meta">
+              <p id="levelLabel" class="level-label">Level 1</p>
+              <p id="questionProgress" class="question-progress">Frage 1 von 10</p>
+            </div>
+
+            <div
+              class="progress-track"
+              role="progressbar"
+              aria-label="Fortschritt im Level"
+              aria-valuemin="0"
+              aria-valuemax="10"
+              aria-valuenow="0"
+            >
+              <div id="progressBar" class="progress-bar"></div>
+            </div>
+
+            <div class="puzzle-card">
+              <p id="puzzleCategory" class="question-category"></p>
+              <p id="puzzleQuestion" class="question"></p>
+              <div id="puzzleOptions" class="option-list"></div>
+              <p id="puzzleFeedback" class="feedback" aria-live="polite"></p>
+            </div>
+
+            <button id="nextPuzzleBtn" class="button button-primary" type="button" hidden>
+              Weiter
+            </button>
           </div>
 
-          <button id="nextPuzzleBtn" class="button button-primary" type="button" hidden>
-            Nächste Frage
-          </button>
+          <section id="levelResult" class="level-result" aria-live="polite" hidden>
+            <p class="section-kicker">Level abgeschlossen</p>
+            <h3 id="levelResultTitle">Dein Ergebnis</h3>
+
+            <div class="result-score">
+              <strong id="levelScore">0 von 10</strong>
+              <span id="levelPercentage">0 % richtig</span>
+            </div>
+
+            <p id="levelResultMessage" class="result-message"></p>
+
+            <div class="result-details">
+              <div>
+                <span>Richtige Antworten</span>
+                <strong id="levelCorrectCount">0</strong>
+              </div>
+              <div>
+                <span>Fragen im Level</span>
+                <strong id="levelQuestionCount">10</strong>
+              </div>
+            </div>
+
+            <div class="result-actions">
+              <button id="nextLevelBtn" class="button button-primary" type="button">
+                Nächstes Level
+              </button>
+              <button id="replayLevelBtn" class="button button-outline" type="button">
+                Wiederholen
+              </button>
+              <button id="resultHomeBtn" class="button button-outline" type="button">
+                Zur Übersicht
+              </button>
+            </div>
+          </section>
         </section>
       </main>
 
