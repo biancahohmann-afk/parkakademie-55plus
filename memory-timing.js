@@ -73,8 +73,7 @@
     else memoryScreen.appendChild(notice);
     updateTaskNotice(notice);
 
-    const startMemoryBtn = document.getElementById("startMemoryBtn");
-    startMemoryBtn?.addEventListener("click", () => {
+    document.getElementById("startMemoryBtn")?.addEventListener("click", () => {
       tasksCompleted = 0;
       correctTasks = 0;
       roundActive = false;
@@ -100,14 +99,9 @@
 
       if (tasksCompleted === taskLimit) {
         const nextButton = document.getElementById("memoryNextBtn");
-        const startButton = document.getElementById("memoryStartBtn");
         if (nextButton) {
           nextButton.hidden = true;
           nextButton.disabled = true;
-        }
-        if (startButton) {
-          startButton.hidden = true;
-          startButton.disabled = true;
         }
         status.textContent = "Die zehn Aufgaben sind geschafft. Sieh dir unten dein Ergebnis an.";
       }
