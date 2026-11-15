@@ -1,84 +1,495 @@
-<!DOCTYPE html>
-<html lang="de">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ParkAkademie 55plus – Gedächtnis & Rätsel</title>
-    <meta
-      name="description"
-      content="Gedächtnistraining und Rätsel für Teilnehmende der ParkAkademie 55plus."
-    />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div class="app-shell">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">ParkAkademie 55plus</p>
-          <h1>Gedächtnis & Rätsel</h1>
-        </div>
-        <button id="settingsToggle" class="secondary-btn" type="button" aria-expanded="false">
-          Einstellungen
-        </button>
-      </header>
+:root {
+  --red: #b52029;
+  --red-dark: #921b22;
+  --gray: #9c9c9c;
+  --page: #f3f3f3;
+  --surface: #ffffff;
+  --soft-gray: #eeeeee;
+  --border: #cccccc;
+  --text: #171717;
+  --muted: #4a4a4a;
+  --success: #245c39;
+  --error: #9b1c22;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
 
-      <section id="settingsPanel" class="settings-panel hidden" aria-label="Einstellungen">
-        <label for="fontScale">Schriftgröße</label>
-        <input id="fontScale" type="range" min="100" max="140" step="5" value="100" />
-        <div class="settings-actions">
-          <button id="contrastToggle" class="secondary-btn" type="button">Hoher Kontrast: Aus</button>
-        </div>
-      </section>
+* {
+  box-sizing: border-box;
+}
 
-      <main>
-        <section id="homeScreen" class="panel active">
-          <h2>Willkommen</h2>
-          <p>
-            Trainiere dein Gedächtnis und löse kleine Rätsel – einfach, klar und gut lesbar.
-          </p>
-          <div class="quick-stats">
-            <div>
-              <span>Richtige Antworten</span>
-              <strong id="totalCorrect">0</strong>
-            </div>
-            <div>
-              <span>Spiele</span>
-              <strong id="gamesPlayed">0</strong>
-            </div>
-          </div>
-          <div class="button-row">
-            <button id="startMemoryBtn" class="primary-btn" type="button">Gedächtnis starten</button>
-            <button id="startPuzzleBtn" class="primary-btn" type="button">Rätsel starten</button>
-          </div>
-        </section>
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
 
-        <section id="memoryScreen" class="panel">
-          <div class="panel-header">
-            <h2>Gedächtnis</h2>
-            <button class="secondary-btn" type="button" data-nav="home">Zurück</button>
-          </div>
-          <p id="memoryInstruction" class="instruction">Merke dir die Reihenfolge.</p>
-          <div id="memorySequence" class="memory-sequence"></div>
-          <div id="memoryBoard" class="card-grid" aria-live="polite"></div>
-          <div class="status-box">
-            <p id="memoryStatus">Bereit?</p>
-          </div>
-        </section>
+button,
+input {
+  font: inherit;
+}
 
-        <section id="puzzleScreen" class="panel">
-          <div class="panel-header">
-            <h2>Rätsel</h2>
-            <button class="secondary-btn" type="button" data-nav="home">Zurück</button>
-          </div>
-          <div class="puzzle-card">
-            <p id="puzzleQuestion" class="question"></p>
-            <div id="puzzleOptions" class="option-list"></div>
-            <p id="puzzleFeedback" class="feedback" aria-live="polite"></p>
-          </div>
-        </section>
-      </main>
-    </div>
+button {
+  cursor: pointer;
+}
 
-    <script src="app.js"></script>
-  </body>
-</html>
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.page-shell {
+  width: min(100% - 32px, 1100px);
+  margin: 0 auto;
+  padding: 22px 0 32px;
+}
+
+.topbar {
+  display: grid;
+  grid-template-columns: minmax(180px, 290px) minmax(220px, 1fr) auto;
+  align-items: center;
+  gap: 22px;
+  padding: 8px 0 20px;
+  margin-bottom: 22px;
+  border-bottom: 4px solid var(--red);
+}
+
+.brand {
+  display: block;
+  width: 100%;
+  max-width: 290px;
+  color: var(--red);
+  text-decoration: none;
+}
+
+.brand-logo {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.logo-fallback {
+  color: var(--gray);
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.logo-fallback span {
+  color: var(--red);
+}
+
+.logo-fallback small {
+  display: block;
+  color: var(--text);
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+
+.app-title {
+  min-width: 0;
+}
+
+.eyebrow,
+.section-kicker {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.2;
+}
+
+h2 {
+  margin-bottom: 10px;
+  font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+  line-height: 1.25;
+}
+
+h3 {
+  margin-bottom: 8px;
+  font-size: 1.35rem;
+}
+
+.panel,
+.settings-panel {
+  padding: clamp(22px, 4vw, 36px);
+  border: 1px solid #dddddd;
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.panel:not([hidden]) {
+  display: block;
+}
+
+.settings-panel:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 28px;
+  margin-bottom: 20px;
+}
+
+.intro {
+  max-width: 750px;
+  color: var(--muted);
+  font-size: 1.08rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin: 26px 0;
+}
+
+.stat-card {
+  padding: 18px 20px;
+  border-left: 5px solid var(--gray);
+  border-radius: 6px;
+  background: var(--soft-gray);
+}
+
+.stat-card span {
+  display: block;
+  color: var(--muted);
+}
+
+.stat-card strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.activity-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.activity-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-top: 5px solid var(--red);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.activity-card p:not(.activity-number) {
+  color: var(--muted);
+}
+
+.activity-number {
+  margin-bottom: 8px;
+  color: var(--red);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.activity-card .button {
+  margin-top: auto;
+}
+
+.button {
+  display: inline-flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 20px;
+  border: 2px solid transparent;
+  border-radius: 7px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.button-primary {
+  background: var(--red);
+  color: #ffffff;
+}
+
+.button-primary:hover {
+  background: var(--red-dark);
+}
+
+.button-outline {
+  border-color: var(--gray);
+  background: #ffffff;
+  color: var(--text);
+}
+
+.button-outline:hover {
+  background: var(--soft-gray);
+}
+
+.privacy-note {
+  margin: 24px 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.setting {
+  display: grid;
+  gap: 6px;
+}
+
+.setting label,
+.setting-label {
+  font-weight: 700;
+}
+
+.setting input[type="range"] {
+  width: min(340px, 70vw);
+  accent-color: var(--red);
+}
+
+#fontScaleValue {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.panel-heading h2 {
+  margin-bottom: 0;
+}
+
+.instruction,
+.question {
+  font-size: 1.12rem;
+}
+
+.memory-sequence {
+  display: flex;
+  min-height: 68px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.memory-chip {
+  display: inline-flex;
+  min-width: 64px;
+  min-height: 58px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border: 2px solid var(--red);
+  border-radius: 7px;
+  background: #ffffff;
+  color: var(--red);
+  font-weight: 700;
+}
+
+.memory-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.memory-choice,
+.option-btn {
+  min-height: 58px;
+  padding: 12px 16px;
+  border: 2px solid var(--border);
+  border-radius: 7px;
+  background: var(--soft-gray);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.memory-choice:hover:not(:disabled),
+.option-btn:hover:not(:disabled) {
+  border-color: var(--red);
+  background: #f9eeee;
+}
+
+.memory-choice.selected {
+  border-color: var(--red);
+}
+
+.memory-choice.correct,
+.option-btn.correct {
+  border-color: var(--success);
+  background: #edf5ef;
+}
+
+.memory-choice.wrong,
+.option-btn.wrong {
+  border-color: var(--error);
+  background: #faeeee;
+}
+
+.memory-choice:disabled,
+.option-btn:disabled {
+  cursor: default;
+  opacity: 1;
+}
+
+.feedback-box {
+  min-height: 60px;
+  margin: 20px 0 14px;
+  padding: 14px 18px;
+  border-left: 5px solid var(--gray);
+  border-radius: 4px;
+  background: var(--soft-gray);
+}
+
+.feedback-box p {
+  margin: 0;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.puzzle-card {
+  padding: 10px 0 18px;
+}
+
+.question {
+  font-weight: 700;
+}
+
+.option-list {
+  display: grid;
+  gap: 12px;
+}
+
+.option-btn {
+  width: 100%;
+  background: #ffffff;
+  text-align: left;
+}
+
+.feedback {
+  min-height: 1.7em;
+  margin: 18px 0 0;
+  font-weight: 700;
+}
+
+.feedback.success {
+  color: var(--success);
+}
+
+.feedback.error {
+  color: var(--error);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 4px 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+body.high-contrast {
+  --red: #ff737b;
+  --red-dark: #ff9298;
+  --page: #000000;
+  --surface: #111111;
+  --soft-gray: #242424;
+  --border: #c9c9c9;
+  --text: #ffffff;
+  --muted: #eeeeee;
+  --success: #8de0a5;
+  --error: #ff858b;
+  --shadow: none;
+}
+
+body.high-contrast .button-primary {
+  color: #000000;
+}
+
+body.high-contrast .memory-chip,
+body.high-contrast .option-btn {
+  background: #111111;
+  color: var(--text);
+}
+
+@media (max-width: 800px) {
+  .topbar {
+    grid-template-columns: 1fr;
+    justify-items: start;
+  }
+
+  .brand {
+    max-width: 270px;
+  }
+}
+
+@media (max-width: 650px) {
+  .page-shell {
+    width: min(100% - 22px, 1100px);
+    padding-top: 14px;
+  }
+
+  .activity-grid,
+  .stats {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .panel-heading .button,
+  .topbar > .button {
+    width: 100%;
+  }
+
+  .memory-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .settings-panel:not([hidden]) {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .setting input[type="range"] {
+    width: 100%;
+  }
+
+  .footer {
+    flex-direction: column;
+  }
+}
