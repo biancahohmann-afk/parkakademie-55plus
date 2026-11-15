@@ -9,8 +9,10 @@
     />
     <title>ParkAkademie 55plus – Gedächtnis &amp; Rätsel</title>
     <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./mahjong.css" />
     <script src="./memory-timing.js" defer></script>
     <script src="./app.js" defer></script>
+    <script src="./mahjong.js" defer></script>
   </head>
   <body>
     <div class="page-shell">
@@ -122,6 +124,18 @@
                 Quiz starten
               </button>
             </article>
+
+            <article class="activity-card">
+              <p class="activity-number">03</p>
+              <h3>Mahjong-Paare</h3>
+              <p>
+                Finde in deinem eigenen Tempo gleiche Spielsteine. Ohne Zeitdruck,
+                mit gut lesbaren Symbolen und einer hilfreichen Tippfunktion.
+              </p>
+              <button id="startMahjongBtn" class="button button-primary" type="button">
+                Mahjong starten
+              </button>
+            </article>
           </div>
 
           <p class="privacy-note">
@@ -169,6 +183,39 @@
               Neue Runde
             </button>
           </div>
+        </section>
+
+        <section id="mahjongScreen" class="panel" hidden>
+          <div class="panel-heading">
+            <div>
+              <p class="section-kicker">Ruhiges Gedächtnisspiel</p>
+              <h2>Mahjong-Paare</h2>
+            </div>
+            <button class="button button-outline" type="button" data-nav="home">
+              Zur Übersicht
+            </button>
+          </div>
+          <p class="mahjong-instructions">
+            Wähle zwei gleiche Spielsteine nacheinander aus. Es gibt keinen Zeitdruck.
+            Finde alle Paare, um das Spiel abzuschließen.
+          </p>
+          <div class="mahjong-toolbar" aria-label="Spielstand">
+            <p class="mahjong-stat">Gefundene Paare: <strong id="mahjongPairs">0 von 8</strong></p>
+            <p class="mahjong-stat">Züge: <strong id="mahjongMoves">0</strong></p>
+          </div>
+          <p id="mahjongStatus" class="mahjong-status" role="status" aria-live="polite">
+            Wähle einen Spielstein aus.
+          </p>
+          <div id="mahjongBoard" class="mahjong-board" aria-label="Mahjong-Spielsteine"></div>
+          <div class="action-row mahjong-actions">
+            <button id="mahjongHintBtn" class="button button-outline" type="button">Tipp zeigen</button>
+            <button id="mahjongRestartBtn" class="button button-primary" type="button">Neu mischen</button>
+          </div>
+          <section id="mahjongResult" class="mahjong-result" aria-live="polite" hidden>
+            <h3>Sehr gut – alle Paare gefunden!</h3>
+            <p id="mahjongResultText"></p>
+            <button id="mahjongPlayAgainBtn" class="button button-primary" type="button">Noch einmal spielen</button>
+          </section>
         </section>
 
         <section id="puzzleScreen" class="panel" hidden>
